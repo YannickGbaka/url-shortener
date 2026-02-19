@@ -3,7 +3,6 @@ import {
   InternalServerErrorException,
   NotFoundException,
 } from '@nestjs/common';
-import { CreateShortLinkDto } from '../dto/create-short-link.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShortLinkEntity } from '../entities/short-link.entity';
@@ -18,19 +17,12 @@ export class ShortLinkRepository {
     private readonly shortLinkModel: Repository<ShortLinkEntity>,
     private readonly shortLinkFactory: ShortLinkFactory,
   ) {}
-  async create({ longUrl }: CreateShortLinkDto): Promise<ShortLink> {
-    const existingRow = await this.shortLinkModel.findOneBy({
-      shortUrl: longUrl,
-    });
-    if (existingRow) return this.shortLinkFactory.createFromEntity(existingRow);
-
-    const shortenUrl = await this.generateUniqueShortCode(longUrl);
-
-    const shortLink = new ShortLink(shortenUrl, longUrl);
-
-    return this.shortLinkFactory.createFromEntity(
+  async create(shortLink: ShortLink): Promise<ShortLink> {
+    const data = this.shortLinkFactory.createFromEntity(
       await this.shortLinkModel.save(this.shortLinkFactory.create(shortLink)),
     );
+    console.log(data);
+    return data;
   }
 
   async findAll(): Promise<ShortLink[]> {
@@ -56,7 +48,6 @@ export class ShortLinkRepository {
 
   async removeByShortLink(shortUrl: string) {
     const urlPayload = await this.shortLinkModel.findOneBy({ shortUrl });
-    console.log(urlPayload);
     if (!urlPayload) {
       return new NotFoundException();
     }
@@ -64,7 +55,7 @@ export class ShortLinkRepository {
     return await this.shortLinkModel.remove(urlPayload);
   }
 
-  private async generateUniqueShortCode(url: string) {
+  public async generateUniqueShortCode(url: string) {
     const IDEAL_HASH_LENGTH = 7;
 
     let attemps = 0;
@@ -86,8 +77,17 @@ export class ShortLinkRepository {
 
       attemps++;
     }
+
     throw new InternalServerErrorException(
       'something unexpected occured, try again please',
     );
+  }
+
+  public async findByLongUrl(longUrl: string) {
+    const existingShortenUrl = await this.shortLinkModel.findOneBy({ longUrl });
+    if (!existingShortenUrl) {
+      return null;
+    }
+    return this.shortLinkFactory.createFromEntity(existingShortenUrl);
   }
 }
