@@ -4,7 +4,6 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
-import { UpdateShortLinkDto } from './dto/update-short-link.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ShortLink } from './entities/short-link.entity';
@@ -44,10 +43,6 @@ export class ShortLinkService {
       throw new NotFoundException('This url does not exist');
     }
     return urlPayload;
-  }
-
-  update(id: number, updateShortLinkDto: UpdateShortLinkDto) {
-    return `This action updates a #${id} shortLink`;
   }
 
   remove(id: number) {
