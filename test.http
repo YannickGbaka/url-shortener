@@ -4,3 +4,6 @@ Content-Type: application/json
 {
     "longUrl": "https://guru-learner.com"
 }
+###
+
+GET http://localhost:3000/short-link/otVcuw3

@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
 import { UpdateShortLinkDto } from './dto/update-short-link.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -32,6 +36,14 @@ export class ShortLinkService {
 
   findOne(id: number) {
     return `This action returns a #${id} shortLink`;
+  }
+
+  async findOneByShortUrl(shortUrl: string): Promise<ShortLink> {
+    const urlPayload = await this.shortLinkRepository.findOneBy({ shortUrl });
+    if (!urlPayload) {
+      throw new NotFoundException('This url does not exist');
+    }
+    return urlPayload;
   }
 
   update(id: number, updateShortLinkDto: UpdateShortLinkDto) {

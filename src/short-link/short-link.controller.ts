@@ -6,11 +6,14 @@ import {
   Patch,
   Param,
   Delete,
+  Res,
+  NotFoundException,
 } from '@nestjs/common';
 import { ShortLinkService } from './short-link.service';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
 import { UpdateShortLinkDto } from './dto/update-short-link.dto';
 import { ShortLink } from './entities/short-link.entity';
+import { Response } from 'express';
 
 @Controller('short-link')
 export class ShortLinkController {
@@ -29,9 +32,14 @@ export class ShortLinkController {
     return this.shortLinkService.findAll();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.shortLinkService.findOne(+id);
+  @Get(':shortUrl')
+  async findOneByLongUrl(
+    @Param('shortUrl') shortUl: string,
+    @Res() response: Response,
+  ) {
+    const urlPayload = await this.shortLinkService.findOneByShortUrl(shortUl);
+    console.log(urlPayload);
+    return response.redirect(301, urlPayload.longUrl);
   }
 
   @Patch(':id')
