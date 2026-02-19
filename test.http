@@ -2,11 +2,11 @@ POST http://localhost:3000/short-link
 Content-Type: application/json
 
 {
-    "longUrl": "https://guru-learner.com"
+    "longUrl": "https://guru-learner.ci"
 }
 ###
 
-GET http://localhost:3000/short-link/otVcuw3
+GET http://localhost:3000/short-link/9Q3mFQJ
 
 
 ### ALL SHORT LINKS
@@ -15,4 +15,4 @@ GET http://localhost:3000/short-link
 
 ### DELETE A LINK 
 
-DELETE http://localhost:3000/short-link/kZUoeCcsdf
+DELETE http://localhost:3000/short-link/kZUoeCcsdfq
