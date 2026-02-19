@@ -30,8 +30,8 @@ export class ShortLinkService {
     return await this.shortLinkRepository.save(newUrl);
   }
 
-  findAll() {
-    return `This action returns all shortLink`;
+  findAll(): Promise<ShortLink[]> {
+    return this.shortLinkRepository.find();
   }
 
   findOne(id: number) {

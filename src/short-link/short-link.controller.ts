@@ -7,13 +7,12 @@ import {
   Param,
   Delete,
   Res,
-  NotFoundException,
 } from '@nestjs/common';
 import { ShortLinkService } from './short-link.service';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
 import { UpdateShortLinkDto } from './dto/update-short-link.dto';
-import { ShortLink } from './entities/short-link.entity';
 import { Response } from 'express';
+import { ShortLink } from './entities/short-link.entity';
 
 @Controller('short-link')
 export class ShortLinkController {
@@ -28,7 +27,7 @@ export class ShortLinkController {
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<ShortLink[]> {
     return this.shortLinkService.findAll();
   }
 
