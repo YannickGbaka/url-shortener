@@ -1,11 +1,13 @@
 import {
   Column,
   CreateDateColumn,
+  Entity,
   Index,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
+@Entity('short-links')
 export class ShortLink {
   @PrimaryGeneratedColumn('uuid')
   id: string;
