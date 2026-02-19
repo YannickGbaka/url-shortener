@@ -1,0 +1,6 @@
+POST http://localhost:3000/short-link
+Content-Type: application/json
+
+{
+    "longUrl": "https://guru-learner.com"
+}
