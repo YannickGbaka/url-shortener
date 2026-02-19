@@ -7,12 +7,17 @@ import {
   Param,
   Delete,
   Res,
+  HttpStatus,
+  HttpCode,
+  NotFoundException,
 } from '@nestjs/common';
 import { ShortLinkService } from './short-link.service';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
 import { UpdateShortLinkDto } from './dto/update-short-link.dto';
 import { Response } from 'express';
 import { ShortLink } from './entities/short-link.entity';
+import { STATUS_CODES } from 'http';
+import { NotFoundError } from 'rxjs';
 
 @Controller('short-link')
 export class ShortLinkController {
@@ -49,8 +54,9 @@ export class ShortLinkController {
     return this.shortLinkService.update(+id, updateShortLinkDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.shortLinkService.remove(+id);
+  @Delete(':shortUrl')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('shortUrl') shortUrl: string) {
+    await this.shortLinkService.removeByShortLink(shortUrl);
   }
 }

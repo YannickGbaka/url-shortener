@@ -54,6 +54,16 @@ export class ShortLinkService {
     return `This action removes a #${id} shortLink`;
   }
 
+  async removeByShortLink(shortUrl: string) {
+    const urlPayload = await this.shortLinkRepository.findOneBy({ shortUrl });
+    console.log(urlPayload);
+    if (!urlPayload) {
+      return new NotFoundException();
+    }
+
+    return await this.shortLinkRepository.remove(urlPayload);
+  }
+
   private async generateUniqueShortCode(url: string) {
     const IDEAL_HASH_LENGTH = 7;
 

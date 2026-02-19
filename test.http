@@ -11,4 +11,8 @@ GET http://localhost:3000/short-link/otVcuw3
 
 ### ALL SHORT LINKS
 
- http://localhost:3000/short-link
+GET http://localhost:3000/short-link
+
+### DELETE A LINK 
+
+DELETE http://localhost:3000/short-link/kZUoeCcsdf
