@@ -7,6 +7,7 @@ import { ShortLinkCommandHandlers } from './commands';
 import { ShortLinkEventHandlers } from './events';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShortLinkEntity } from './entities/short-link.entity';
+import { ShortLinksQueryHandlers } from './queries';
 
 @Module({
   controllers: [ShortLinkController],
@@ -16,6 +17,8 @@ import { ShortLinkEntity } from './entities/short-link.entity';
     ShortLinkFactory,
     ...ShortLinkEventHandlers,
     ...ShortLinkCommandHandlers,
+    ...ShortLinksQueryHandlers,
+    ...ShortLinksQueryHandlers,
   ],
 })
 export class ShortLinkModule {}
