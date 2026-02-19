@@ -1,49 +1,49 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Param,
-  Delete,
-  Res,
-  HttpStatus,
-  HttpCode,
-} from '@nestjs/common';
-import { ShortLinkService } from './short-link.service';
+import { Controller, Post, Body, Get, Param, Res } from '@nestjs/common';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
 import { Response } from 'express';
-import { ShortLink } from './entities/short-link.entity';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CreateShortLinkCommand } from './commands/create-short-link.command';
+import { ShortLinksQuery } from './queries/short-links/short-links.query';
+import { ShortLink } from './ShortLink';
+import { ShortLinkQuery } from './queries/short-link/short-link.query';
 
 @Controller('short-link')
 export class ShortLinkController {
-  constructor(private readonly shortLinkService: ShortLinkService) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
+  ) {}
 
   @Post()
   async create(@Body() createShortLinkDto: CreateShortLinkDto) {
-    const linkMetaData = await this.shortLinkService.create(createShortLinkDto);
-    return {
-      shortLink: linkMetaData.shortUrl,
-    };
+    return this.commandBus.execute<CreateShortLinkCommand, void>(
+      new CreateShortLinkCommand(createShortLinkDto),
+    );
   }
 
   @Get()
   findAll(): Promise<ShortLink[]> {
-    return this.shortLinkService.findAll();
+    return this.queryBus.execute<ShortLinksQuery, ShortLink[]>(
+      new ShortLinksQuery(),
+    );
   }
 
   @Get(':shortUrl')
-  async findOneByLongUrl(
+  async findOneByShortUrl(
     @Param('shortUrl') shortUl: string,
     @Res() response: Response,
   ) {
-    const urlPayload = await this.shortLinkService.findOneByShortUrl(shortUl);
+    const urlPayload = await this.queryBus.execute<ShortLinkQuery, ShortLink>(
+      new ShortLinkQuery(shortUl),
+    );
+
     console.log(urlPayload);
-    return response.redirect(301, urlPayload.longUrl);
+    return response.redirect(301, urlPayload.getLongUrl());
   }
 
-  @Delete(':shortUrl')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('shortUrl') shortUrl: string) {
-    await this.shortLinkService.removeByShortLink(shortUrl);
-  }
+  // @Delete(':shortUrl')
+  // @HttpCode(HttpStatus.NO_CONTENT)
+  // async remove(@Param('shortUrl') shortUrl: string) {
+  //   await this.shortLinkService.removeByShortLink(shortUrl);
+  // }
 }

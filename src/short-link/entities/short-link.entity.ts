@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 
 @Entity('short-links')
-export class ShortLink {
+export class ShortLinkEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -20,8 +20,8 @@ export class ShortLink {
   longUrl: string;
 
   @CreateDateColumn()
-  createdAt: Date;
+  createdAt?: Date;
 
   @UpdateDateColumn()
-  updatedAt: Date;
+  updatedAt?: Date;
 }
