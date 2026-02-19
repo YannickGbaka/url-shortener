@@ -1,11 +1,29 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
 import { UpdateShortLinkDto } from './dto/update-short-link.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ShortLink } from './entities/short-link.entity';
+import * as crypt from 'crypto';
 
 @Injectable()
 export class ShortLinkService {
-  create(createShortLinkDto: CreateShortLinkDto) {
-    return 'This action adds a new shortLink';
+  constructor(
+    @InjectRepository(ShortLink)
+    private readonly shortLinkRepository: Repository<ShortLink>,
+  ) {}
+  async create({ longUrl }: CreateShortLinkDto): Promise<ShortLink> {
+    const existingRow = await this.shortLinkRepository.findOneBy({ longUrl });
+    if (existingRow) return existingRow;
+
+    const shortenUrl = await this.generateUniqueShortCode(longUrl);
+
+    const newUrl = this.shortLinkRepository.create({
+      longUrl,
+      shortUrl: shortenUrl,
+    });
+
+    return await this.shortLinkRepository.save(newUrl);
   }
 
   findAll() {
@@ -22,5 +40,32 @@ export class ShortLinkService {
 
   remove(id: number) {
     return `This action removes a #${id} shortLink`;
+  }
+
+  private async generateUniqueShortCode(url: string) {
+    const IDEAL_HASH_LENGTH = 7;
+
+    let attemps = 0;
+
+    while (attemps < 10) {
+      const shortenUrl = crypt
+        .createHash('sha512')
+        .update(url)
+        .digest('base64url')
+        .substring(0, IDEAL_HASH_LENGTH);
+
+      const existingShortenUrl = await this.shortLinkRepository.findOneBy({
+        shortUrl: shortenUrl,
+      });
+
+      if (!existingShortenUrl) {
+        return shortenUrl;
+      }
+
+      attemps++;
+    }
+    throw new InternalServerErrorException(
+      'something unexpected occured, try again please',
+    );
   }
 }

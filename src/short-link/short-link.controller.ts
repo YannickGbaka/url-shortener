@@ -1,15 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { ShortLinkService } from './short-link.service';
 import { CreateShortLinkDto } from './dto/create-short-link.dto';
 import { UpdateShortLinkDto } from './dto/update-short-link.dto';
+import { ShortLink } from './entities/short-link.entity';
 
 @Controller('short-link')
 export class ShortLinkController {
   constructor(private readonly shortLinkService: ShortLinkService) {}
 
   @Post()
-  create(@Body() createShortLinkDto: CreateShortLinkDto) {
-    return this.shortLinkService.create(createShortLinkDto);
+  async create(@Body() createShortLinkDto: CreateShortLinkDto) {
+    const linkMetaData = await this.shortLinkService.create(createShortLinkDto);
+    return {
+      shortLink: linkMetaData.shortUrl,
+    };
   }
 
   @Get()
@@ -23,7 +35,10 @@ export class ShortLinkController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateShortLinkDto: UpdateShortLinkDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateShortLinkDto: UpdateShortLinkDto,
+  ) {
     return this.shortLinkService.update(+id, updateShortLinkDto);
   }
 
