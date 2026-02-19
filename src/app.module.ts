@@ -3,9 +3,10 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ShortLinkModule } from './short-link/short-link.module';
-
+import { CqrsModule } from '@nestjs/cqrs';
 @Module({
   imports: [
+    CqrsModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: '9qasp5v56q8ckkf5dc.leapcellpool.com',
